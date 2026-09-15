@@ -1,0 +1,6 @@
+/* Target the root HTML structure */
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box; /* Ensures padding doesn't affect overall width */
+}
