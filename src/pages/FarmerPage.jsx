@@ -20,7 +20,7 @@ function FarmerPage() {
         <EmptyMessage>No farmers available.</EmptyMessage>
       ) : (
         farmer.map((item, index) => (
-          <Farmer key={item.id || index} {...item} />
+          <Farmer key={index} {...item} />
         ))
       )}
     </PageLayout>

@@ -1,6 +1,7 @@
 import Navbar from './components/Navbar'
 import Farmer from './components/Farmer'
 import FarmProduct from './components/FarmProduct'
+import Footer from './components/Footer'
 import {Outlet} from 'react-router'
 function App() {
 
@@ -13,6 +14,8 @@ function App() {
 
      
      <Outlet />
+
+     <Footer/>
      
     </>
   )

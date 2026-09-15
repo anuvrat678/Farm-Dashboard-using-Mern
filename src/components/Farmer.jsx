@@ -1,4 +1,12 @@
 import styled from "styled-components";
+import {z} from 'zod';
+
+ const schema = z.object({
+     name: z.string("Name must be in string format").nonempty("Name cannot be empty"),
+     age: z.number(),
+     location: z.string().optional()
+ })
+ 
 
 const FarmerCard = styled.article`
   background: #e8f5e9;
@@ -24,22 +32,28 @@ const FarmerInfo = styled.p`
   margin: 7px 0;
 `;
 
-function Farmer({ name, location, crop, land }) {
+function Farmer({ name, age, location }) {
+
+        const result = schema.safeParse({name,age,location});
+        if(!result.success){
+            console.error(result.error.issues);
+        }else{
+            console.log(result.data);
+        }
+
   return (
     <FarmerCard>
       <FarmerName>{name}</FarmerName>
 
       <FarmerInfo>
+        <strong>Age:</strong> {age}
+      </FarmerInfo>
+
+      <FarmerInfo>
         <strong>Location:</strong> {location}
       </FarmerInfo>
 
-      <FarmerInfo>
-        <strong>Crop:</strong> {crop}
-      </FarmerInfo>
 
-      <FarmerInfo>
-        <strong>Land:</strong> {land}
-      </FarmerInfo>
     </FarmerCard>
   );
 }

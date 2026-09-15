@@ -1,4 +1,12 @@
 import styled from "styled-components";
+import { z } from "zod";
+
+const schema = z.object({
+  name: z.string().nonempty(),
+  type: z.enum(["vegetable","fruit","grain"]),
+  quantity: z.number().min(1).max(10)
+})
+
 
 const ProductCard = styled.article`
   background: ${(props) => {
@@ -38,7 +46,16 @@ const ProductInfo = styled.p`
   margin: 7px 0;
 `;
 
-function FarmProduct({ name, type, quantity, price }) {
+function FarmProduct({ name, type, quantity }) {
+
+  const result = schema.safeParse({name,type,quantity});
+
+  if(!result.success){
+    console.error(result.error.issues);
+  }else{
+    console.log(result.data);
+  }
+
   return (
     <ProductCard $type={type}>
       <ProductName>{name}</ProductName>
@@ -51,9 +68,7 @@ function FarmProduct({ name, type, quantity, price }) {
         <strong>Quantity:</strong> {quantity}
       </ProductInfo>
 
-      <ProductInfo>
-        <strong>Price:</strong> ₹{price}
-      </ProductInfo>
+  
     </ProductCard>
   );
 }

@@ -20,7 +20,7 @@ function ProductPage() {
         <EmptyMessage>No products available.</EmptyMessage>
       ) : (
         products.map((item, index) => (
-          <FarmProduct key={item.id || index} {...item} />
+          <FarmProduct key={index} {...item} />
         ))
       )}
     </PageLayout>

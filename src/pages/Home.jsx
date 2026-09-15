@@ -158,12 +158,6 @@ const ActionText = styled.p`
   line-height: 1.5;
 `;
 
-const Footer = styled.footer`
-  text-align: center;
-  color: #52796f;
-  padding: 20px 0;
-  font-size: 13px;
-`;
 
 function HomePage() {
   return (
@@ -233,9 +227,6 @@ function HomePage() {
         </ActionCard>
       </QuickActions>
 
-      <Footer>
-        Enrollment Number: 202604104610024
-      </Footer>
     </Page>
   );
 }
