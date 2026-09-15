@@ -1,19 +1,30 @@
-import React from 'react'
-import {products} from '../data.js'
-import FarmProduct from '../components/FarmProduct.jsx'
+import { products } from "../data.js";
+import FarmProduct from "../components/FarmProduct.jsx";
 
-const ProductPage = () => {
+import PageLayout from "../components/styled/PageLayout.jsx";
+import PageHeader from "../components/styled/PageHeader.jsx";
+import SectionTitle from "../components/styled/SectionTitle.jsx";
+import EmptyMessage from "../components/styled/EmptyMessage.jsx";
+
+function ProductPage() {
   return (
-    <div>
-    <div style={{border : '2px solid black',borderRadius: '10px'}}>
-           <h2>
-            Farm Products 
-            </h2> 
-        </div>
-     
-      {products.map((e, i) => (<FarmProduct key={i} {...e} />))}
-      </div>
-  )
+    <PageLayout>
+      <PageHeader>
+        <h1>Farm Products</h1>
+        <p>View agricultural products and their details.</p>
+      </PageHeader>
+
+      <SectionTitle>Available Products</SectionTitle>
+
+      {products.length === 0 ? (
+        <EmptyMessage>No products available.</EmptyMessage>
+      ) : (
+        products.map((item, index) => (
+          <FarmProduct key={item.id || index} {...item} />
+        ))
+      )}
+    </PageLayout>
+  );
 }
 
-export default ProductPage
+export default ProductPage;

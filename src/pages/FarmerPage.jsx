@@ -1,21 +1,30 @@
-import React from 'react'
-import {farmer} from '../data.js'
-import Farmer from '../components/Farmer.jsx'
+import { farmer } from "../data.js";
+import Farmer from "../components/Farmer.jsx";
 
-const FarmerPage = () => {
-    return (
-        <div>
-            <div style={{ border: '2px solid black', borderRadius: '10px' }}>
-                <h2>
-                    Farms Detail
-                </h2>
-            </div>
+import PageLayout from "../components/styled/PageLayout.jsx";
+import PageHeader from "../components/styled/PageHeader.jsx";
+import SectionTitle from "../components/styled/SectionTitle.jsx";
+import EmptyMessage from "../components/styled/EmptyMessage.jsx";
 
-            {farmer.map((e, i) =>
-                (<Farmer key={i} {...e} />)
-            )}
-        </div>
-    )
+function FarmerPage() {
+  return (
+    <PageLayout>
+      <PageHeader>
+        <h1>Farmers Details</h1>
+        <p>View all registered farmers and their information.</p>
+      </PageHeader>
+
+      <SectionTitle>Registered Farmers</SectionTitle>
+
+      {farmer.length === 0 ? (
+        <EmptyMessage>No farmers available.</EmptyMessage>
+      ) : (
+        farmer.map((item, index) => (
+          <Farmer key={item.id || index} {...item} />
+        ))
+      )}
+    </PageLayout>
+  );
 }
 
-export default FarmerPage
+export default FarmerPage;

@@ -1,32 +1,61 @@
-import React from 'react'
-import { z } from 'zod'
+import styled from "styled-components";
 
+const ProductCard = styled.article`
+  background: ${(props) => {
+    if (props.$type === "vegetable") return "#d8f3dc";
+    if (props.$type === "fruit") return "#ffe0e0";
+    if (props.$type === "grain") return "#fff3b0";
 
-const FarmProduct = ({name, type, quantity}) => {
-  const schema = z.object({
-    name: z.string().nonempty(),
-    type: z.enum(["vegetable","fruit","grain"]),
-    quantity: z.number().min(1).max(10)
-  })
+    return "#f3f4f6";
+  }};
 
+  border-left: 6px solid ${(props) => {
+    if (props.$type === "vegetable") return "#2d6a4f";
+    if (props.$type === "fruit") return "#d00000";
+    if (props.$type === "grain") return "#d4a017";
 
-  const result = schema.safeParse({name,type,quantity});
+    return "#6b7280";
+  }};
 
-  if(!result.success){
-    console.error(result.error.issues);
-  }else{
-    console.log(result.data);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: translateY(-4px);
   }
+`;
 
+const ProductName = styled.h3`
+  color: #1b4332;
+  margin: 0 0 12px;
+  font-size: 22px;
+`;
+
+const ProductInfo = styled.p`
+  color: #374151;
+  margin: 7px 0;
+`;
+
+function FarmProduct({ name, type, quantity, price }) {
   return (
-    <div>
-      <h4>Product Name: {name}</h4>
-      <h4>Type: {type}</h4>
-      <h4>Quantity: {quantity}</h4>
-      <p>___________________________________________________________________________________</p>
-    </div>
-    
-  )
+    <ProductCard $type={type}>
+      <ProductName>{name}</ProductName>
+
+      <ProductInfo>
+        <strong>Type:</strong> {type}
+      </ProductInfo>
+
+      <ProductInfo>
+        <strong>Quantity:</strong> {quantity}
+      </ProductInfo>
+
+      <ProductInfo>
+        <strong>Price:</strong> ₹{price}
+      </ProductInfo>
+    </ProductCard>
+  );
 }
 
-export default FarmProduct
+export default FarmProduct;
