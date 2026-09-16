@@ -1,6 +1,65 @@
-/* Target the root HTML structure */
-html, body, #root {
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+}
+
+body {
   margin: 0;
-  padding: 0;
-  box-sizing: border-box; /* Ensures padding doesn't affect overall width */
+
+  background:
+    radial-gradient(
+      circle at 15% 15%,
+      rgba(96, 125, 110, 0.12),
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at 85% 75%,
+      rgba(128, 115, 82, 0.08),
+      transparent 28%
+    ),
+    #e5e9e5;
+
+  color: #26352d;
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: inherit;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+::selection {
+  background: #8fa99a;
+  color: #17231d;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin-top: 22px;
+}
+
+@media (max-width: 800px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
 }

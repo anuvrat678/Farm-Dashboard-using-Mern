@@ -1,234 +1,539 @@
-
-import { Link } from "react-router";
 import styled from "styled-components";
+import { Link } from "react-router";
 
-const Page = styled.div`
-  display: flex;
-  flex-direction: column;
-  
-  gap: 30px;
-`;
+import PageLayout from "../components/styled/PageLayout.jsx";
+
+import {
+  SectionHeading,
+  Eyebrow,
+  SectionTitle,
+  SectionDescription,
+} from "../components/styled/SectionTitle.jsx";
+
+import {
+  StatCard,
+  StatTop,
+  StatIcon,
+  StatLabel,
+  StatValue,
+} from "../components/styled/StatCard.jsx";
+
+import {
+  PrimaryButton,
+  SecondaryButton,
+} from "../components/styled/Button.jsx";
+
 
 const Hero = styled.section`
-  background: linear-gradient(135deg, #1b4332, #40916c);
-  color: white;
-  padding: 45px;
-//   border-radius: 20px;
+  position: relative;
+  overflow: hidden;
 
-  display: flex;
-  justify-content: space-between;
+  padding: 55px;
+
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  border-radius: 24px;
+
+  background:
+    linear-gradient(
+      120deg,
+      rgba(255, 255, 255, 0.78),
+      rgba(229, 238, 232, 0.58)
+    );
+
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+
+  box-shadow:
+    0 20px 45px rgba(44, 62, 54, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+
+  display: grid;
+  grid-template-columns: 1.5fr 0.8fr;
+  gap: 40px;
   align-items: center;
-  gap: 25px;
 
-  @media (max-width: 700px) {
+  &::before {
+    content: "";
+
+    position: absolute;
+
+    width: 260px;
+    height: 260px;
+
+    top: -130px;
+    right: 80px;
+
+    border-radius: 50%;
+
+    background: rgba(122, 160, 143, 0.14);
+
+    filter: blur(10px);
+  }
+
+  &::after {
+    content: "";
+
+    position: absolute;
+
+    width: 180px;
+    height: 180px;
+
+    bottom: -100px;
+    right: 300px;
+
+    border-radius: 50%;
+
+    background: rgba(184, 168, 124, 0.12);
+
+    filter: blur(12px);
+  }
+
+  @media (max-width: 800px) {
+    grid-template-columns: 1fr;
+    padding: 40px;
+  }
+
+  @media (max-width: 600px) {
     padding: 30px;
-    flex-direction: column;
-    align-items: flex-start;
+    border-radius: 18px;
   }
 `;
+
 
 const HeroContent = styled.div`
-  max-width: 650px;
+  position: relative;
+  z-index: 2;
 `;
+
 
 const Badge = styled.span`
-  display: inline-block;
-  background: #d8f3dc;
-  color: #1b4332;
-  padding: 7px 14px;
-  border-radius: 20px;
-  font-size: 13px;
-  font-weight: bold;
+  display: inline-flex;
+
+  padding: 7px 12px;
+
+  border: 1px solid #cbd8d0;
+  border-radius: 50px;
+
+  background: rgba(255, 255, 255, 0.55);
+
+  color: #52796f;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  letter-spacing: 1.1px;
 `;
+
 
 const HeroTitle = styled.h1`
-  font-size: 42px;
-  margin: 18px 0 12px;
+  max-width: 700px;
 
-  @media (max-width: 700px) {
-    font-size: 32px;
-  }
+  margin: 20px 0 15px;
+
+  color: #26352d;
+
+  font-size: clamp(38px, 5vw, 58px);
+  line-height: 1.05;
+
+  letter-spacing: -2px;
+
+  font-weight: 750;
 `;
+
+
+const Highlight = styled.span`
+  color: #52796f;
+`;
+
 
 const HeroText = styled.p`
-  font-size: 17px;
-  line-height: 1.6;
-  color: #d8f3dc;
-`;
+  max-width: 570px;
 
-const HeroIcon = styled.div`
-  font-size: 100px;
-
-  @media (max-width: 700px) {
-    font-size: 65px;
-  }
-`;
-
-const Button = styled(Link)`
-  display: inline-block;
-  background: white;
-  color: #1b4332;
-  padding: 13px 22px;
-  border-radius: 10px;
-  text-decoration: none;
-  font-weight: bold;
-  margin-top: 15px;
-
-  &:hover {
-    background: #d8f3dc;
-  }
-`;
-
-const SectionTitle = styled.h2`
-  color: #1b4332;
-  font-size: 25px;
   margin: 0;
+
+  color: #64746c;
+
+  font-size: 16px;
+  line-height: 1.7;
 `;
 
-const StatsGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
 
-  @media (max-width: 700px) {
-    grid-template-columns: 1fr;
-  }
+const ButtonGroup = styled.div`
+  display: flex;
+
+  gap: 12px;
+
+  margin-top: 27px;
+
+  flex-wrap: wrap;
 `;
 
-const StatCard = styled.div`
-  background: white;
+
+const HeroPanel = styled.div`
+  position: relative;
+  z-index: 2;
+
   padding: 25px;
-  border-radius: 15px;
-  border: 1px solid #d8e8dc;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 18px;
+
+  background: rgba(255, 255, 255, 0.42);
+
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+
+  box-shadow:
+    0 12px 30px rgba(44, 62, 54, 0.07),
+    inset 0 1px 0 rgba(255, 255, 255, 0.75);
 `;
 
-const StatIcon = styled.div`
-  font-size: 30px;
+
+const PanelLabel = styled.p`
+  margin: 0 0 20px;
+
+  color: #718078;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  text-transform: uppercase;
+  letter-spacing: 1px;
 `;
 
-const StatTitle = styled.p`
-  color: #52796f;
-  margin: 15px 0 5px;
+
+const PanelItem = styled.div`
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 14px 0;
+
+  border-bottom: 1px solid rgba(82, 121, 111, 0.13);
+
+  &:last-child {
+    border-bottom: none;
+  }
 `;
 
-const StatValue = styled.h3`
-  font-size: 32px;
-  color: #1b4332;
-  margin: 0;
+
+const PanelName = styled.span`
+  color: #52635b;
+
+  font-size: 13px;
+  font-weight: 600;
 `;
 
-const QuickActions = styled.div`
+
+const PanelValue = styled.span`
+  color: #26352d;
+
+  font-size: 19px;
+  font-weight: 750;
+`;
+
+
+const ActionsGrid = styled.div`
   display: grid;
+
   grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
+
+  gap: 18px;
+
+  margin-top: 22px;
 
   @media (max-width: 700px) {
     grid-template-columns: 1fr;
   }
 `;
+
 
 const ActionCard = styled(Link)`
-  background: white;
-  border: 1px solid #d8e8dc;
-  border-radius: 15px;
-  padding: 25px;
+  padding: 26px;
+
+  border: 1px solid #d7e0da;
+  border-radius: 16px;
+
+  background: rgba(255, 255, 255, 0.72);
+
+  color: #26352d;
+
   text-decoration: none;
-  color: #1b4332;
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
 
   &:hover {
-    border-color: #40916c;
     transform: translateY(-3px);
+
+    border-color: #a7bdb0;
+
+    box-shadow: 0 12px 28px rgba(44, 62, 54, 0.08);
   }
 `;
 
-const ActionIcon = styled.div`
-  font-size: 35px;
-  margin-bottom: 12px;
+
+const ActionNumber = styled.span`
+  display: block;
+
+  margin-bottom: 20px;
+
+  color: #82988c;
+
+  font-size: 11px;
+  font-weight: 800;
+
+  letter-spacing: 1.2px;
 `;
+
 
 const ActionTitle = styled.h3`
   margin: 0 0 8px;
+
+  color: #304139;
+
   font-size: 20px;
 `;
 
+
 const ActionText = styled.p`
-  color: #52796f;
   margin: 0;
-  line-height: 1.5;
+
+  color: #718078;
+
+  font-size: 14px;
+
+  line-height: 1.6;
 `;
 
 
-function HomePage() {
+const HomePage = () => {
   return (
-    <Page>
+    <PageLayout>
+
       <Hero>
+
         <HeroContent>
-          <Badge>🌱 FARM MANAGEMENT SYSTEM</Badge>
+
+          <Badge>
+            FARM MANAGEMENT SYSTEM
+          </Badge>
 
           <HeroTitle>
-            Welcome to Your Farm Dashboard
+            Farm records,
+            <br />
+            <Highlight>organized simply.</Highlight>
           </HeroTitle>
 
           <HeroText>
-            Manage your farmers and agricultural products
-            from one simple and organized dashboard.
+            Manage farmers, agricultural products,
+            locations and quantities from one clean
+            and organized dashboard.
           </HeroText>
 
-          <Button to="/farmer">
-            Explore Farmers →
-          </Button>
+          <ButtonGroup>
+
+            <PrimaryButton to="/farmer">
+              View Farmers
+            </PrimaryButton>
+
+            <SecondaryButton to="/product">
+              View Products
+            </SecondaryButton>
+
+          </ButtonGroup>
+
         </HeroContent>
 
-        <HeroIcon>🌾</HeroIcon>
+
+        <HeroPanel>
+
+          <PanelLabel>
+            Current Overview
+          </PanelLabel>
+
+          <PanelItem>
+            <PanelName>
+              Registered Farmers
+            </PanelName>
+
+            <PanelValue>
+              05
+            </PanelValue>
+          </PanelItem>
+
+          <PanelItem>
+            <PanelName>
+              Farm Products
+            </PanelName>
+
+            <PanelValue>
+              10
+            </PanelValue>
+          </PanelItem>
+
+          <PanelItem>
+            <PanelName>
+              Categories
+            </PanelName>
+
+            <PanelValue>
+              03
+            </PanelValue>
+          </PanelItem>
+
+        </HeroPanel>
+
       </Hero>
 
-      <SectionTitle>Dashboard Overview</SectionTitle>
 
-      <StatsGrid>
-        <StatCard>
-          <StatIcon>👨‍🌾</StatIcon>
-          <StatTitle>Total Farmers</StatTitle>
-          <StatValue>5</StatValue>
-        </StatCard>
+      <section>
 
-        <StatCard>
-          <StatIcon>🥕</StatIcon>
-          <StatTitle>Total Products</StatTitle>
-          <StatValue>10</StatValue>
-        </StatCard>
+        <SectionHeading>
 
-        <StatCard>
-          <StatIcon>🌱</StatIcon>
-          <StatTitle>Farm Categories</StatTitle>
-          <StatValue>3</StatValue>
-        </StatCard>
-      </StatsGrid>
+          <Eyebrow>
+            Overview
+          </Eyebrow>
 
-      <SectionTitle>Quick Actions</SectionTitle>
+          <SectionTitle>
+            Dashboard Statistics
+          </SectionTitle>
 
-      <QuickActions>
-        <ActionCard to="/farmer">
-          <ActionIcon>👨‍🌾</ActionIcon>
-          <ActionTitle>Manage Farmers</ActionTitle>
-          <ActionText>
-            View farmer details, locations, and
-            farmer records.
-          </ActionText>
-        </ActionCard>
+          <SectionDescription>
+            A quick look at your current farm records.
+          </SectionDescription>
 
-        <ActionCard to="/product">
-          <ActionIcon>📦</ActionIcon>
-          <ActionTitle>Manage Products</ActionTitle>
-          <ActionText>
-            View agricultural products, categories,
-            and quantities.
-          </ActionText>
-        </ActionCard>
-      </QuickActions>
+        </SectionHeading>
 
-    </Page>
+
+        <div className="stats-grid">
+
+          <StatCard>
+
+            <StatTop>
+              <StatIcon>
+                01
+              </StatIcon>
+            </StatTop>
+
+            <StatLabel>
+              Total Farmers
+            </StatLabel>
+
+            <StatValue>
+              05
+            </StatValue>
+
+          </StatCard>
+
+
+          <StatCard>
+
+            <StatTop>
+              <StatIcon>
+                02
+              </StatIcon>
+            </StatTop>
+
+            <StatLabel>
+              Total Products
+            </StatLabel>
+
+            <StatValue>
+              10
+            </StatValue>
+
+          </StatCard>
+
+
+          <StatCard>
+
+            <StatTop>
+              <StatIcon>
+                03
+              </StatIcon>
+            </StatTop>
+
+            <StatLabel>
+              Farm Categories
+            </StatLabel>
+
+            <StatValue>
+              03
+            </StatValue>
+
+          </StatCard>
+
+        </div>
+
+      </section>
+
+
+      <section>
+
+        <SectionHeading>
+
+          <Eyebrow>
+            Navigation
+          </Eyebrow>
+
+          <SectionTitle>
+            Quick Actions
+          </SectionTitle>
+
+          <SectionDescription>
+            Access commonly used farm management sections.
+          </SectionDescription>
+
+        </SectionHeading>
+
+
+        <ActionsGrid>
+
+          <ActionCard to="/farmer">
+
+            <ActionNumber>
+              01 / FARMERS
+            </ActionNumber>
+
+            <ActionTitle>
+              Manage Farmers
+            </ActionTitle>
+
+            <ActionText>
+              View farmer information, locations,
+              ages, and registered farm records.
+            </ActionText>
+
+          </ActionCard>
+
+
+          <ActionCard to="/product">
+
+            <ActionNumber>
+              02 / PRODUCTS
+            </ActionNumber>
+
+            <ActionTitle>
+              Manage Products
+            </ActionTitle>
+
+            <ActionText>
+              View agricultural products, categories,
+              and available quantities.
+            </ActionText>
+
+          </ActionCard>
+
+        </ActionsGrid>
+
+      </section>
+
+    </PageLayout>
   );
-}
+};
 
 export default HomePage;
