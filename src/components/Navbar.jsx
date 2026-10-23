@@ -148,6 +148,10 @@ const Navbar = () => {
         <NavLinkItem to="/product">
           Products
         </NavLinkItem>
+
+        <NavLinkItem to="/inventory">
+          Inventory
+        </NavLinkItem>
       </NavLinks>
 
       <Enrollment>

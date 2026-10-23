@@ -1,35 +1,47 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import App from './App.jsx'
-import { createBrowserRouter } from "react-router";
-import { RouterProvider} from "react-router/dom";
-import './index.css'
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import {
+  createBrowserRouter,
+} from "react-router";
+import {
+  RouterProvider,
+} from "react-router/dom";
 
-//importing pages for routing
-import ProductPage from './pages/ProductPage.jsx';
-import FarmerPage from './pages/FarmerPage.jsx';
-import HomePage from './pages/Home.jsx';
+import App from "./App.jsx";
+import HomePage from "./pages/Home.jsx";
+import FarmerPage from "./pages/FarmerPage.jsx";
+import ProductPage from "./pages/ProductPage.jsx";
+import FarmInventoryManager from "./pages/FarmInventoryManager.jsx";
+
+import "./index.css";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
-    children: [{
-      index: true,
-      element : <HomePage />,
-    },
+    children: [
       {
-      path: "farmer",
-      element : <FarmerPage />,
-    },{
-      path: "product",
-      element: <ProductPage />
-    }]
+        index: true,
+        element: <HomePage />,
+      },
+      {
+        path: "farmer",
+        element: <FarmerPage />,
+      },
+      {
+        path: "product",
+        element: <ProductPage />,
+      },
+      {
+        path: "inventory",
+        element: <FarmInventoryManager />,
+      },
+    ],
   },
 ]);
 
-createRoot(document.getElementById('root')).render(
+createRoot(document.getElementById("root")).render(
   <StrictMode>
     <RouterProvider router={router} />
-  </StrictMode>,
-)
+  </StrictMode>
+);
