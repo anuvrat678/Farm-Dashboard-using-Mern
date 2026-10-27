@@ -1,4 +1,5 @@
 import { useState } from "react";
+import styled from "styled-components";
 import { z } from "zod";
 
 import { useFarmer } from "../context/FarmerContext.jsx";
@@ -6,6 +7,7 @@ import PageLayout from "../components/styled/PageLayout.jsx";
 import PageHeader from "../components/styled/PageHeader.jsx";
 import { SectionTitle } from "../components/styled/SectionTitle.jsx";
 import EmptyMessage from "../components/styled/EmptyMessage.jsx";
+
 import {
   DataTable,
   TableWrapper,
@@ -14,6 +16,7 @@ import {
   TypeBadge,
   Quantity,
 } from "../components/styled/DataTable.jsx";
+
 import {
   FieldLabel,
   FormGrid,
@@ -27,15 +30,30 @@ import {
 const cropSchema = z
   .object({
     farmerId: z.string().min(1, "Select a farmer."),
-    cropName: z.string().trim().min(1, "Crop name is required."),
-    cropsCategory: z.enum(["Grains", "Vegetables", "Fruits"]),
-    quantity: z.number().positive("Quantity must be greater than zero."),
+    cropName: z
+      .string()
+      .trim()
+      .min(1, "Crop name is required."),
+    category: z.enum([
+      "Grains",
+      "Vegetables",
+      "Fruits",
+    ]),
+    quantity: z.number().positive(
+      "Quantity must be greater than zero."
+    ),
     unit: z.string().trim().min(1, "Unit is required."),
-    pricePerUnit: z.number().positive("Price must be greater than zero."),
+    pricePerUnit: z.number().min(
+      0,
+      "Price cannot be negative."
+    ),
     harvestSeason: z.string().optional(),
   })
   .superRefine((data, context) => {
-    if (data.cropsCategory === "Grains" && !data.harvestSeason?.trim()) {
+    if (
+      data.category === "Grains" &&
+      !data.harvestSeason?.trim()
+    ) {
       context.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["harvestSeason"],
@@ -47,7 +65,7 @@ const cropSchema = z
 const initialForm = {
   farmerId: "",
   cropName: "",
-  cropsCategory: "Grains",
+  category: "Grains",
   quantity: "",
   unit: "kg",
   pricePerUnit: "",
@@ -60,12 +78,42 @@ const categoryType = {
   Fruits: "fruit",
 };
 
+const ActionButton = styled.button`
+  padding: 7px 10px;
+  color: #8a3935;
+  background: #f8e8e5;
+  border: 1px solid #e4c2bd;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover {
+    filter: brightness(0.97);
+  }
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+`;
+
 export default function ProductPage() {
-  const { farmers, loading, loadError, addCrop } = useFarmer();
+  const {
+    farmers,
+    loading,
+    loadError,
+    addCrop,
+    deleteCrop,
+  } = useFarmer();
+
   const [formData, setFormData] = useState(initialForm);
   const [errors, setErrors] = useState([]);
   const [message, setMessage] = useState("");
+
   const [saving, setSaving] = useState(false);
+  const [deletingCropId, setDeletingCropId] = useState(null);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -73,25 +121,36 @@ export default function ProductPage() {
     setFormData((previous) => ({
       ...previous,
       [name]: value,
-      ...(name === "cropsCategory" && value !== "Grains"
+
+      ...(name === "category" && value !== "Grains"
         ? { harvestSeason: "" }
         : {}),
     }));
   }
 
+  // Add a crop to the selected farmer
   async function handleSubmit(event) {
     event.preventDefault();
     setMessage("");
 
     const result = cropSchema.safeParse({
       ...formData,
-      quantity: formData.quantity.trim() === "" ? NaN : Number(formData.quantity),
+
+      quantity:
+        formData.quantity.trim() === ""
+          ? NaN
+          : Number(formData.quantity),
+
       pricePerUnit:
-        formData.pricePerUnit.trim() === "" ? NaN : Number(formData.pricePerUnit),
+        formData.pricePerUnit.trim() === ""
+          ? NaN
+          : Number(formData.pricePerUnit),
     });
 
     if (!result.success) {
-      setErrors(result.error.issues.map((issue) => issue.message));
+      setErrors(
+        result.error.issues.map((issue) => issue.message)
+      );
       return;
     }
 
@@ -101,50 +160,110 @@ export default function ProductPage() {
     try {
       const crop = {
         cropName: result.data.cropName,
-        category: result.data.cropsCategory,
+        category: result.data.category,
         quantity: result.data.quantity,
         unit: result.data.unit,
         pricePerUnit: result.data.pricePerUnit,
-        ...(result.data.cropsCategory === "Grains"
-          ? { harvestSeason: result.data.harvestSeason.trim() }
+
+        ...(result.data.category === "Grains"
+          ? {
+              harvestSeason:
+                result.data.harvestSeason.trim(),
+            }
           : {}),
       };
 
-      await addCrop(Number(result.data.farmerId), crop);
-      setFormData(initialForm);
+      await addCrop(
+        Number(result.data.farmerId),
+        crop
+      );
+
+      setFormData({
+        ...initialForm,
+        farmerId: result.data.farmerId,
+      });
+
       setMessage("Crop added successfully.");
     } catch (error) {
-      setMessage(error.message);
+      setMessage(
+        error.message || "Unable to add crop."
+      );
     } finally {
       setSaving(false);
     }
   }
 
+  // Remove a crop
+  async function handleDeleteCrop(farmer, crop) {
+    const confirmed = window.confirm(
+      `Remove ${crop.cropName} from ${farmer.name}?`
+    );
+
+    if (!confirmed) return;
+
+    const rowId = `${farmer.farmerId}-${crop.cropId}`;
+
+    setDeletingCropId(rowId);
+    setMessage("");
+
+    try {
+      await deleteCrop(
+        farmer.farmerId,
+        crop.cropId
+      );
+
+      setMessage(
+        `${crop.cropName} removed successfully.`
+      );
+    } catch (error) {
+      setMessage(
+        error.message || "Unable to remove crop."
+      );
+    } finally {
+      setDeletingCropId(null);
+    }
+  }
+
+  // Flatten all farmers' crops into one list
   const cropRows = farmers.flatMap((farmer) =>
-    (farmer.producedCrops || []).map((crop) => ({ farmer, crop }))
+    (farmer.producedCrops || []).map((crop) => ({
+      farmer,
+      crop,
+    }))
   );
 
   return (
     <PageLayout>
       <PageHeader>
         <h1>Farm Products</h1>
-        <p>Enter crops for a selected farmer and view farmer-wise crop details.</p>
+
+        <p>
+          Add crops to a selected farmer and view or remove
+          farmer-wise crop details.
+        </p>
       </PageHeader>
 
-      <SectionTitle>Farmer-wise Crop Entry</SectionTitle>
+      <SectionTitle>
+        Farmer-wise Crop Entry
+      </SectionTitle>
 
       <FormPanel onSubmit={handleSubmit}>
         <FormGrid>
           <FieldLabel>
             Select Farmer
+
             <FormSelect
               name="farmerId"
               value={formData.farmerId}
               onChange={handleChange}
             >
               <option value="">Select farmer</option>
+
               {farmers.map((farmer) => (
-                <option key={farmer.farmerId} value={farmer.farmerId}>
+                <option
+                  key={farmer.farmerId}
+                  value={farmer.farmerId}
+                >
                   {farmer.name} (ID: {farmer.farmerId})
                 </option>
               ))}
@@ -153,6 +272,7 @@ export default function ProductPage() {
 
           <FieldLabel>
             Crop Name
+
             <FormInput
               name="cropName"
               value={formData.cropName}
@@ -163,20 +283,22 @@ export default function ProductPage() {
 
           <FieldLabel>
             Crop Category
+
             <FormSelect
-              name="cropsCategory"
-              value={formData.cropsCategory}
+              name="category"
+              value={formData.category}
               onChange={handleChange}
             >
               <option value="Grains">Grains</option>
-              <option value="Vegetables">Vegetable</option>
+              <option value="Vegetables">Vegetables</option>
               <option value="Fruits">Fruits</option>
             </FormSelect>
           </FieldLabel>
 
-          {formData.cropsCategory === "Grains" && (
+          {formData.category === "Grains" && (
             <FieldLabel>
               Harvest Season
+
               <FormInput
                 name="harvestSeason"
                 value={formData.harvestSeason}
@@ -188,6 +310,7 @@ export default function ProductPage() {
 
           <FieldLabel>
             Quantity
+
             <FormInput
               name="quantity"
               type="number"
@@ -201,6 +324,7 @@ export default function ProductPage() {
 
           <FieldLabel>
             Unit
+
             <FormInput
               name="unit"
               value={formData.unit}
@@ -211,6 +335,7 @@ export default function ProductPage() {
 
           <FieldLabel>
             Price Per Unit
+
             <FormInput
               name="pricePerUnit"
               type="number"
@@ -222,20 +347,35 @@ export default function ProductPage() {
             />
           </FieldLabel>
 
-          <SubmitButton type="submit" disabled={saving || farmers.length === 0}>
+          <SubmitButton
+            type="submit"
+            disabled={
+              saving || loading || farmers.length === 0
+            }
+          >
             {saving ? "Saving..." : "Add Crop"}
           </SubmitButton>
         </FormGrid>
 
         {errors.map((error, index) => (
-          <FormMessage key={index}>{error}</FormMessage>
+          <FormMessage key={`${error}-${index}`}>
+            {error}
+          </FormMessage>
         ))}
-        {message && <FormMessage $tone="success">{message}</FormMessage>}
+
+        {message && (
+          <FormMessage $tone="success">
+            {message}
+          </FormMessage>
+        )}
       </FormPanel>
 
       <SectionTitle>Farmer-wise Crops</SectionTitle>
 
-      {loadError && <FormMessage>{loadError}</FormMessage>}
+      {loadError && (
+        <FormMessage>{loadError}</FormMessage>
+      )}
+
       {loading ? (
         <EmptyMessage>Loading crops...</EmptyMessage>
       ) : cropRows.length === 0 ? (
@@ -251,25 +391,65 @@ export default function ProductPage() {
                 <th>Quantity</th>
                 <th>Price / Unit</th>
                 <th>Harvest Season</th>
+                <th>Action</th>
               </tr>
             </thead>
+
             <tbody>
-              {cropRows.map(({ farmer, crop }) => (
-                <TableRow key={`${farmer.farmerId}-${crop.cropId}`}>
-                  <TableCell>{farmer.name}</TableCell>
-                  <TableCell>{crop.cropName}</TableCell>
-                  <TableCell>
-                    <TypeBadge $type={categoryType[crop.category]}>
-                      {crop.category === "Vegetables" ? "Vegetable" : crop.category}
-                    </TypeBadge>
-                  </TableCell>
-                  <TableCell>
-                    <Quantity>{crop.quantity} {crop.unit}</Quantity>
-                  </TableCell>
-                  <TableCell>₹{crop.pricePerUnit}</TableCell>
-                  <TableCell>{crop.harvestSeason || "N/A"}</TableCell>
-                </TableRow>
-              ))}
+              {cropRows.map(({ farmer, crop }) => {
+                const rowId =
+                  `${farmer.farmerId}-${crop.cropId}`;
+
+                return (
+                  <TableRow key={rowId}>
+                    <TableCell>
+                      {farmer.name}
+                    </TableCell>
+
+                    <TableCell>
+                      {crop.cropName}
+                    </TableCell>
+
+                    <TableCell>
+                      <TypeBadge
+                        $type={categoryType[crop.category]}
+                      >
+                        {crop.category === "Vegetables"
+                          ? "Vegetable"
+                          : crop.category}
+                      </TypeBadge>
+                    </TableCell>
+
+                    <TableCell>
+                      <Quantity>
+                        {crop.quantity} {crop.unit}
+                      </Quantity>
+                    </TableCell>
+
+                    <TableCell>
+                      ₹{crop.pricePerUnit}
+                    </TableCell>
+
+                    <TableCell>
+                      {crop.harvestSeason || "N/A"}
+                    </TableCell>
+
+                    <TableCell>
+                      <ActionButton
+                        type="button"
+                        disabled={deletingCropId === rowId}
+                        onClick={() =>
+                          handleDeleteCrop(farmer, crop)
+                        }
+                      >
+                        {deletingCropId === rowId
+                          ? "Removing..."
+                          : "Remove"}
+                      </ActionButton>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </tbody>
           </DataTable>
         </TableWrapper>
